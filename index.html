@@ -369,20 +369,54 @@ function run(){demElig();
 const esc=x=>String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const dfr=v=>{if(!v)return"";const [y,m,dd]=v.split("-");return `${dd}/${m}/${y}`};
 function buildPrint(){const v=id=>$(id).value.trim(),civ=(document.querySelector('input[name="civ"]:checked')||{}).value||"";
- const L=(lab,val)=>`<tr><th class="fw-semibold" style="width:38%">${lab}</th><td>${esc(val)||"&nbsp;"}</td></tr>`;
- $("printForm").innerHTML=`<div class="container-fluid p-0 small" lang="fr">
- <h1 class="h6 fw-bold text-center mb-2">Formulaire d’autorisation d’accès aux données de consommation d’électricité et de chaleur</h1>
- <h2 class="h6 fw-bold">A. Participant (particulier)</h2>
- <table class="table table-bordered table-sm mb-1"><tbody>${L("Civilité",civ)}${L("Nom *",v("fNom"))}${L("Prénom *",v("fPre"))}${L("Né(e) le / à",[dfr(v("fNai")),v("fLieuN")].filter(Boolean).join(" à "))}${L("Adresse *",v("fAdr"))}${L("Code postal * / Commune *",[v("fCp"),v("fVille")].filter(Boolean).join(" "))}${L("N° téléphone / E-mail",[v("fTel"),v("fMail")].filter(Boolean).join(" · "))}</tbody></table>
- <p class="small mb-3">* Informations obligatoires</p>
- <h2 class="h6 fw-bold">B. Bailleur (Grand Dijon Habitat) — à compléter par le bailleur</h2>
- <table class="table table-bordered table-sm mb-3"><tbody>${["Dénomination sociale / forme juridique *","Nom commercial / N° SIRET *","Adresse, code postal, commune *","Nom et adresse / quartier de l’opération","Interlocuteur pour le suivi (nom, prénom) *","Adresse professionnelle, téléphone, e-mail *"].map(x=>L(x,"")).join("")}</tbody></table>
- <h2 class="h6 fw-bold">C. Accord du participant (particulier)</h2>
- <p class="mb-1">Usage des données : gestion de l’énergie dans le logement.</p>
- <p class="mb-2">☒ Par la signature de ce document, j’autorise expressément OGGA à transmettre à Wittym les données personnelles d’électricité et de chauffage mentionnées dans la notice (paragraphe 2).</p>
- <table class="table table-bordered table-sm mb-2"><tbody>${L("Fait à",v("fFait"))}${L("Le",dfr(v("fLe")))}</tbody></table>
- <div class="border rounded p-2" style="height:3cm"><span class="small">Signature du participant</span></div>
- <p class="small text-body-secondary mt-3 mb-0">Document préparé avec le Simulateur solaire de Fontaine d’Ouche (prototype, Hackathon #5 2026), d’après le formulaire GDH 53 et 55. À signer à la main et à remettre à votre bailleur.</p>
+ const C="#a6127a",X='style="-webkit-print-color-adjust:exact;print-color-adjust:exact"';
+ const F=(lab,val,span)=>`<td class="pf-c"${span?` colspan="${span}"`:""}><div class="pf-l">${lab}</div><div class="pf-v">${esc(val)||"&nbsp;"}</div></td>`;
+ const E=(lab,span)=>`<td class="pf-c pf-e"${span?` colspan="${span}"`:""}><div class="pf-l">${lab}</div><div class="pf-v">&nbsp;</div></td>`;
+ const H=(n,t,sub)=>`<div class="pf-h" ${X}><span class="pf-n">${n}</span>${t}${sub?`<span class="pf-s">${sub}</span>`:""}</div>`;
+ $("printForm").innerHTML=`<style>
+  #printForm{font-size:9.5pt;color:#212529}
+  #printForm .pf-head{display:flex;align-items:center;gap:4mm;border-bottom:1.2mm solid ${C};padding-bottom:2mm;margin-bottom:4mm}
+  #printForm .pf-head img{height:15mm;width:auto}
+  #printForm .pf-t{flex:1;text-align:center}
+  #printForm .pf-t h1{font-size:12.5pt;font-weight:700;margin:0 0 1mm;line-height:1.25}
+  #printForm .pf-t p{font-size:8.5pt;color:#6c757d;margin:0}
+  #printForm .pf-h{display:flex;align-items:center;gap:2.5mm;background:${C};color:#fff;font-weight:700;font-size:10pt;padding:1.6mm 3mm;border-radius:1.5mm;margin:4mm 0 2mm}
+  #printForm .pf-n{display:inline-flex;align-items:center;justify-content:center;width:5.5mm;height:5.5mm;border-radius:50%;background:#fff;color:${C};font-size:9pt}
+  #printForm .pf-s{margin-left:auto;font-weight:400;font-size:8.5pt;font-style:italic}
+  #printForm table.pf{width:100%;border-collapse:collapse;table-layout:fixed}
+  #printForm .pf-c{border:.3mm solid #adb5bd;padding:1.4mm 2.5mm;vertical-align:top}
+  #printForm .pf-l{font-size:7.5pt;color:#6c757d;text-transform:uppercase;letter-spacing:.02em;line-height:1.2}
+  #printForm .pf-v{font-size:10.5pt;font-weight:600;min-height:5mm;line-height:1.35}
+  #printForm .pf-e{background:#f1f3f5;height:11mm}
+  #printForm .pf-note{font-size:8pt;color:#6c757d;margin:1mm 0 0}
+  #printForm .pf-ok{display:flex;gap:2.5mm;border:.3mm solid #adb5bd;border-radius:1.5mm;padding:2.5mm 3mm;margin-bottom:2mm}
+  #printForm .pf-box{flex:none;width:4.5mm;height:4.5mm;border:.4mm solid #212529;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:9pt;line-height:1;margin-top:.3mm}
+  #printForm .pf-sign{border:.4mm dashed #6c757d;border-radius:1.5mm;height:30mm;padding:1.5mm 2.5mm}
+  #printForm .pf-foot{border-top:.3mm solid #dee2e6;margin-top:4mm;padding-top:1.5mm;font-size:7.5pt;color:#6c757d;display:flex;justify-content:space-between;gap:4mm}
+ </style>
+ <div lang="fr">
+  <div class="pf-head"><img src="logo-dijon-metropole.png" alt="Dijon Métropole"><div class="pf-t"><h1>Formulaire d’autorisation d’accès aux données<br>de consommation d’électricité et de chaleur</h1><p>Projet RESPONSE · Fontaine d’Ouche, Dijon</p></div><img src="logo-response.png" alt="RESPONSE"></div>
+  ${H("A","Participant (particulier)")}
+  <table class="pf"><tbody>
+   <tr>${F("Civilité",civ)}${F("Nom *",v("fNom"))}${F("Prénom *",v("fPre"),2)}</tr>
+   <tr>${F("Né(e) le",dfr(v("fNai")),2)}${F("À (lieu de naissance)",v("fLieuN"),2)}</tr>
+   <tr>${F("Adresse *",v("fAdr"),4)}</tr>
+   <tr>${F("Code postal *",v("fCp"))}${F("Commune *",v("fVille"),3)}</tr>
+   <tr>${F("N° téléphone",v("fTel"),2)}${F("E-mail",v("fMail"),2)}</tr>
+  </tbody></table>
+  <p class="pf-note">* Informations obligatoires</p>
+  ${H("B","Bailleur (Grand Dijon Habitat)","À compléter par le bailleur")}
+  <table class="pf" ${X}><tbody>
+   <tr>${E("Dénomination sociale / forme juridique *")}${E("Nom commercial / N° SIRET *")}</tr>
+   <tr>${E("Adresse, code postal, commune *")}${E("Nom et adresse / quartier de l’opération")}</tr>
+   <tr>${E("Interlocuteur pour le suivi (nom, prénom) *")}${E("Adresse professionnelle, téléphone, e-mail *")}</tr>
+  </tbody></table>
+  ${H("C","Accord du participant (particulier)")}
+  <p class="mb-2"><b>Usage des données :</b> gestion de l’énergie dans le logement.</p>
+  <div class="pf-ok"><span class="pf-box">X</span><span>Par la signature de ce document, j’autorise expressément OGGA à transmettre à Wittym les données personnelles d’électricité et de chauffage mentionnées dans la notice (paragraphe 2).</span></div>
+  <table class="pf mb-2"><tbody><tr>${F("Fait à",v("fFait"))}${F("Le",dfr(v("fLe")))}</tr></tbody></table>
+  <div class="pf-sign"><div class="pf-l">Signature du participant</div></div>
+  <div class="pf-foot"><span>Document préparé avec le Simulateur solaire de Fontaine d’Ouche (prototype, Hackathon #5 2026), d’après le formulaire GDH 53 et 55.</span><span class="text-nowrap fw-semibold">À signer et à remettre à votre bailleur</span></div>
  </div>`}
 $("fForm").addEventListener("submit",e=>{e.preventDefault();const fm=$("fForm");
  if(!fm.checkValidity()){fm.classList.add("was-validated");const bad=fm.querySelector(":invalid");if(bad)bad.focus();return}
