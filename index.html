@@ -263,6 +263,17 @@ function run(){
  let us=[],eA=0,kA=0,al=0;
  if(B.j){const tk=P?d.pr.tk:1,te=P?d.pr.te:1,a=d.ten.map(x=>x*tk);us=a.map((x,i)=>Math.min(x,A.C*Cm[i]));al=sum(a);kA=sum(us);eA=sum(d.tenEur.map((e,i)=>a[i]>0?e*te*us[i]/a[i]:0))}
  let soon=0;if(B.j&&!P&&B.s==="gdh"){const ps2=S/A.R,ce2=d.pr.ce,eC2=sum(d.commonEur[B.k].map(x=>x*ps2*ce2)),a2=d.ten.map(x=>x*d.pr.tk),us2=a2.map((x,i)=>Math.min(x,A.C*Cm[i])),eA2=sum(d.tenEur.map((e,i)=>a2[i]>0?e*d.pr.te*us2[i]/a2[i]:0));if(eC2+eA2>eC+eA*1.2)soon=eC2+eA2}
+ /* Projection sur 5 ans : année 1 = scénario affiché ; GDH « aujourd’hui » : la 2e pergola compte à partir de l’année 2 ; −0,5 %/an de rendement des panneaux ; prix constants */
+ const pC=sum(d.commonEur[B.k].map(x=>x*s*d.pr.ce));let pA=0;if(B.j){const a3=d.ten.map(x=>x*d.pr.tk),u3=a3.map((x,i)=>Math.min(x,A.C*Cm[i]));pA=sum(d.tenEur.map((e,i)=>a3[i]>0?e*d.pr.te*u3[i]/a3[i]:0))}
+ const up=!P&&B.s==="gdh"&&pC+pA>eC+eA,yr=[0,1,2,3,4].map(y=>{const g=Math.pow(.995,y),n=up&&y>0;return{c:(n?pC:eC)*g,a:(n?pA:eA)*g}});
+ const y5c=sum(yr.map(x=>x.c)),y5t=sum(yr.map(x=>x.c+x.a)),yv=yr.map(x=>B.j?x.c+x.a:x.c),ym=Math.max(...yv,1e-9);
+ const five=`<div class="card mb-3"><div class="card-body">
+    <h2 class="h6 fw-bold mb-2"><i class="bi bi-calendar-range text-primary me-1"></i>${T("Et sur 5 ans ?","And over 5 years?")}</h2>
+    <p class="mb-2">${B.j?T("Si vous adhérez, vous économiseriez au total","If you join, your total savings would be"):T("Au total, le solaire vous ferait économiser","In total, solar power would save you")} <b class="fs-4">≈ <span class="count" data-v="${B.j?y5t:y5c}">${eur(B.j?y5t:y5c)}</span></b> ${T("en 5 ans.","over 5 years.")}</p>
+    <div class="vstack gap-1 mb-2">${yv.map((v,i)=>`<div class="d-flex align-items-center gap-2 small"><span class="text-body-secondary text-nowrap" style="width:4.5rem">${T("Année","Year")} ${i+1}</span><div class="progress flex-grow-1" role="progressbar" aria-label="${T("Année","Year")} ${i+1}" aria-valuenow="${Math.round(v)}" aria-valuemin="0" aria-valuemax="${Math.round(ym)}" style="height:1rem"><div class="progress-bar bg-warning gauge" data-w="${100*v/ym}" style="width:${100*v/ym}%"></div></div><span class="text-end text-nowrap fw-semibold" style="width:4rem">${eur(v)}</span></div>`).join("")}</div>
+    ${B.j?`<p class="small mb-2">${T(`Sans adhérer : ≈ ${eur(y5c)} en 5 ans (parties communes seulement). <b>L’adhésion vous rapporte ≈ ${eur(y5t-y5c)} de plus.</b>`,`Without joining: ≈ ${eur(y5c)} over 5 years (common areas only). <b>Joining brings you ≈ ${eur(y5t-y5c)} more.</b>`)}</p>`:""}
+    <p class="small text-body-secondary mb-0">${up?T("Année 1 : relevés actuels. Années 2 à 5 : estimation du bailleur avec la 2<sup>e</sup> pergola en service. ","Year 1: current readings. Years 2 to 5: landlord’s estimate with the 2<sup>nd</sup> pergola in service. "):""}${T("Hypothèses : prix de l’électricité constants, panneaux qui perdent environ 0,5 % de production par an. Estimation indicative.","Assumptions: constant electricity prices, panels losing about 0.5% of output per year. Indicative estimate.")}</p>
+   </div></div>`;
  const lbl=B.s==="gdh"?T("En 2027","In 2027"):T("À long terme","Long term"),pg=d.pergola,pm=sum(pg.m),pe=sum(pg.e),cap=B.j&&al>0&&kA<al*.95;
  const per=P?(B.s==="gdh"?T("Estimation pour 2027, avec la 2e pergola en service.","Estimate for 2027, with the 2nd pergola in service."):T("Estimation à long terme du bailleur.","Long-term estimate from the landlord.")):T("D’après les 12 derniers mois (oct. 2025 → sept. 2026).","Based on the last 12 months (Oct 2025 → Sep 2026).");
  const YR=T("/an","/year"),PM=T("par mois","per month"),PY=T("par an","per year");
@@ -276,6 +287,7 @@ function run(){
    </div>
    <p class="small text-body-secondary">${per}</p>
    ${soon?`<div class="alert alert-warning"><i class="bi bi-graph-up-arrow me-1"></i>${T(`<b>Et ce n’est qu’un début :</b> en 2027, avec la 2<sup>e</sup> pergola en service, votre économie passerait à <b>≈ ${eur(soon)} par an</b> (≈ ${eur(soon/12)} par mois).`,`<b>And this is just the beginning:</b> in 2027, with the 2<sup>nd</sup> pergola in service, your savings would rise to <b>≈ ${eur(soon)} per year</b> (≈ ${eur(soon/12)} per month).`)}<div class="small mt-1">${T("Estimation du bailleur.","Landlord’s estimate.")}</div></div>`:""}
+   ${five}
    <div class="card mb-3"><div class="card-body">
     <h2 class="h6 fw-bold mb-2"><i class="bi bi-people-fill text-success me-1"></i>${T("Où en est le quartier ?","How is the neighbourhood doing?")}</h2>
     <p class="mb-2">${T(`<b>${ADH} foyers sur ${LOG}</b> ont déjà adhéré au partage solaire.`,`<b>${ADH} households out of ${LOG}</b> have already joined the solar sharing scheme.`)}</p>
@@ -300,6 +312,7 @@ function run(){
    <p class="display-4 fw-bold mb-0">≈ <span class="count" data-v="${eC}">${eur(eC)}</span> <span class="fs-4 fw-semibold">${PY}</span></p>
    <p class="mb-2">${T(`sur vos charges, sans aucune démarche (≈ ${eur(eC/12)} par mois).`,`on your service charges, without doing anything (≈ ${eur(eC/12)} per month).`)}</p>
    <p class="small text-body-secondary">${per}</p>
+   ${five}
    <div class="d-grid d-sm-flex"><button type="button" class="btn btn-outline-secondary btn-lg" id="rst"><i class="bi bi-arrow-counterclockwise me-1"></i>${T("Nouvelle simulation","New simulation")}</button></div>
   </div></div>`;
  sr.textContent=B.j?T(`Si vous adhérez : environ ${eur((eC+eA)/12)} par mois, soit ${eur(eC+eA)} par an.`,`If you join: about ${eur((eC+eA)/12)} per month, that is ${eur(eC+eA)} per year.`):T(`Vous économisez déjà environ ${eur(eC)} par an.`,`You already save about ${eur(eC)} per year.`);
