@@ -463,7 +463,7 @@ async function sendMail(){const fm=$("fForm");
  if(!fm.checkValidity()){fm.classList.add("was-validated");const bad=fm.querySelector(":invalid");if(bad)bad.focus();return}
  if(!sig.strokes.length){sendMsg("warning",`<i class="bi bi-pen"></i><span>${T("Pour l’envoyer par e-mail, <b>signez d’abord</b> dans le cadre « Votre signature » ci-dessus.","To send it by e-mail, <b>sign first</b> in the “Your signature” box above.")}</span>`);$("sigPad").scrollIntoView({block:"center",behavior:"smooth"});return}
  const b=$("fSend"),lab=b.innerHTML;b.disabled=true;b.innerHTML=`<span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>${T("Préparation du PDF…","Preparing the PDF…")}`;sendMsg("","");
- try{buildPrint();const blob=await makePdf(),nom=[$("fPre").value.trim(),$("fNom").value.trim()].join(" "),fn=`formulaire-partage-solaire-${$("fNom").value.trim().toLowerCase().normalize("NFD").replace(/[^a-z0-9]+/g,"-")||"locataire"}.pdf`;
+ try{buildPrint();const blob=await makePdf(),nom=[$("fPre").value.trim(),$("fNom").value.trim()].join(" "),fn="formulaire-partage-solaire.pdf";
   const file=new File([blob],fn,{type:"application/pdf"}),A0=ADR[adr],to=A0?BAILLEUR_MAIL[BL[A0.b].s]||"":"";
   const subj=`Formulaire partage solaire – ${nom}`,body=`Bonjour,\n\nVeuillez trouver ci-joint mon formulaire signé pour le partage solaire (autoconsommation collective) de Fontaine d’Ouche.\n\n${nom}\n${$("fAdr").value.trim()}, ${$("fCp").value.trim()} ${$("fVille").value.trim()}\n\nCordialement`;
   if(navigator.canShare&&navigator.canShare({files:[file]})){
