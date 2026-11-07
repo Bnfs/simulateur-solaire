@@ -7,7 +7,9 @@ Le simulateur montre à un locataire ce que les pergolas photovoltaïques de son
 **👉 Version en ligne : https://bnfs.github.io/simulateur-solaire/**
 
 ## Contenu
-- `index.html` : le simulateur (un seul fichier, fonctionne hors ligne)
+- `index.html` : le simulateur en 3 étapes (Bootstrap 5.3, fonctionne hors ligne)
+- `vendor/` : Bootstrap 5.3.3 et Bootstrap Icons 1.11.3 (copies locales)
+- `logo-dijon-metropole.png`, `logo-response.png` : logos
 - `Formulaire_GDH_53_55_OGGA.pdf` : formulaire d'autorisation d'accès aux données (onglet « Démarches »)
 
 ## Données

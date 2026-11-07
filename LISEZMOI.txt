@@ -1,12 +1,14 @@
 Simulateur solaire - Fontaine d'Ouche
 =====================================
 Contenu
-- index.html : le simulateur (un seul fichier, fonctionne hors ligne)
+- index.html : le simulateur (fonctionne hors ligne)
+- vendor/ : Bootstrap 5.3.3 (CSS + JS) et Bootstrap Icons 1.11.3, copies locales (fonctionne hors ligne)
+- logo-dijon-metropole.png, logo-response.png : logos (extraits de la présentation ACC bailleurs)
 - Formulaire_GDH_53_55_OGGA.pdf : formulaire d'autorisation d'accès aux données, lié depuis l'onglet « Démarches »
 
 Utilisation
 - Ouvrir index.html dans un navigateur (double-clic).
-- Pour le mettre en ligne : déposer les deux fichiers, dans le même dossier, sur un hébergement statique quelconque.
+- Pour le mettre en ligne : déposer tout le dossier (avec vendor/ et les logos) sur un hébergement statique quelconque.
 
 Données
 - Séries mensuelles issues des Excel GDH et Orvitis (12 mois, oct. 2025 à sept. 2026) : constante « D » au début du script de index.html.
