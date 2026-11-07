@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Simulateur solaire – Fontaine d’Ouche</title>
+<style>
+:root{color-scheme:light dark;--bg:#faf8f3;--sf:#fff;--tx:#1f2933;--mu:#6b7280;--ac:#b45309;--bd:#e7e2d6;--su:#fef3c7;--c1:#f59e0b;--c2:#0f766e;--c3:#2563eb;--c4:#9ca3af;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14110d;--sf:#1e1a14;--tx:#f3eee4;--mu:#a89f8e;--ac:#fbbf24;--bd:#3a3328;--su:#3b2f12;--c1:#fbbf24;--c2:#2dd4bf;--c3:#60a5fa;--c4:#6b7280}}
+:root[data-theme="dark"]{--bg:#14110d;--sf:#1e1a14;--tx:#f3eee4;--mu:#a89f8e;--ac:#fbbf24;--bd:#3a3328;--su:#3b2f12;--c1:#fbbf24;--c2:#2dd4bf;--c3:#60a5fa;--c4:#6b7280}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:760px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:1.55rem;margin:0 0 4px}h2{font-size:1.05rem;margin:28px 0 8px}h3{font-size:.85rem;margin:0 0 6px;color:var(--mu);font-weight:600}
+.sub,.mu{color:var(--mu);font-size:.9rem}
+.box,.card{background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:16px}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+label{display:block;font-size:.85rem;font-weight:600;margin-bottom:4px}
+input{width:100%;font:inherit;padding:12px;border-radius:10px;border:1px solid var(--bd);background:var(--bg);color:var(--tx)}
+input:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--c1);outline-offset:2px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin:12px 0}
+.big{font-size:1.7rem;font-weight:700;line-height:1.2}.card p{margin:6px 0 0;font-size:.85rem;color:var(--mu)}
+.hl{background:var(--su);border-color:var(--c1)}
+.seg{display:inline-flex;border:1px solid var(--bd);border-radius:999px;overflow:hidden;margin:8px 0}
+.seg button,.chip{font:inherit;font-size:.88rem;padding:8px 14px;border:0;background:var(--sf);color:var(--tx);cursor:pointer}
+.seg button.on{background:var(--c1);color:#1f2933;font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}.chip{border:1px solid var(--bd);border-radius:999px}
+a{color:var(--ac)}svg{width:100%;height:auto;display:block}
+.sc{overflow-x:auto}.mix{display:flex;height:22px;border-radius:6px;overflow:hidden;margin:8px 0}
+.lg{list-style:none;padding:0;margin:6px 0;font-size:.85rem}.lg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:8px}
+details{margin-top:18px}summary{cursor:pointer;font-weight:600}
+.as{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:10px 0}
+p.def{font-size:.82rem;color:var(--mu);margin:0 0 8px}.mod{display:inline-block;font-size:.7rem;font-weight:700;background:var(--su);color:var(--tx);border-radius:999px;padding:1px 8px;margin-right:6px}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}.tab{font:inherit;font-size:.9rem;padding:10px 14px;border-radius:999px;border:1px solid var(--bd);background:var(--sf);color:var(--tx);cursor:pointer;text-align:left}.tab.on{background:var(--c1);border-color:var(--c1);color:#1f2933;font-weight:700}
+.steps{padding-left:22px}.steps li{margin:10px 0}.btn{font:inherit;font-weight:700;padding:12px 18px;border-radius:10px;border:0;background:var(--c1);color:#1f2933;cursor:pointer}
+@media (max-width:420px){.form{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main>
+<h1>☀️ Simulateur solaire local</h1>
+<p class="sub">Fontaine d’Ouche, Dijon · ce que les pergolas photovoltaïques de votre immeuble vous apportent.</p>
+<div class="tabs"><button class="tab on" data-t="sim">Simulateur</button><button class="tab" data-t="dem">Intéressé par le dispositif ? Cliquez ici pour les démarches</button></div>
+<div id="v-sim">
+<p class="def"><span class="mod">Module 1</span>Votre logement : le numéro identifie votre immeuble (donc le bailleur et le bloc), la surface fixe la taille de votre quote-part et votre consommation.</p>
+<div class="form box">
+ <div><label for="num">Numéro de votre logement</label><input id="num" inputmode="numeric" placeholder="ex. 55" autocomplete="off"></div>
+ <div><label for="surf">Surface (m²)</label><input id="surf" type="number" inputmode="decimal" min="10" max="250" placeholder="ex. 65"></div>
+</div>
+<div id="chips" hidden></div>
+<div id="out"></div>
+<details><summary>Module 9 · Hypothèses, sigles et sources</summary>
+ <div class="as">
+  <div><label for="aI">Conso (kWh/m²/an)</label><input id="aI" type="number" value="40"></div>
+  <div><label for="aR">Surface de référence (m²)</label><input id="aR" type="number" value="65"></div>
+  <div><label for="aC">Plafond absorbable (% conso mensuelle)</label><input id="aC" type="number" value="75"></div>
+  <div><label for="aE">Ma conso réelle (kWh/an)</label><input id="aE" type="number" placeholder="facultatif"></div>
+ </div>
+ <p class="mu">Fournis par le suivi : productions et répartitions mensuelles (12 mois à sept. 2026), économies nettes par logement, objectifs 2027 (calculettes statiques GDH et Orvitis, suivis des pergolas, livrable RESPONSE D6.12). Estimés ici : la consommation d’après la surface, la répartition des charges communes au prorata de la surface, et le plafond d’énergie qu’un logement peut absorber. Résultats indicatifs, non contractuels.</p>
+ <p class="mu"><b>Principe</b> : l’électricité de la pergola alimente d’abord les parties communes de l’immeuble (autoconsommation directe), puis celles des autres immeubles (partage ACC), puis les locataires adhérents (clé de répartition égale), et le surplus est revendu.</p>
+ <p class="mu"><b>Sigles</b> : ACI = autoconsommation individuelle (directe) ; ACC = autoconsommation collective (partage entre bâtiments à moins d’1 km) ; S21 = tarif d’achat du surplus.</p>
+</details>
+</div>
+<div id="v-dem" hidden>
+<h2>Démarches pour participer au dispositif</h2>
+<p class="def"><span class="mod">Module 10</span>Le parcours pour rejoindre le dispositif d’autoconsommation collective (ACC) : un formulaire d’autorisation d’accès à vos données de consommation d’électricité et de chaleur.</p>
+<div class="box">
+<p><button class="btn" id="dl">📄 Télécharger le formulaire (PDF)</button> <a id="pdf" href="Formulaire_GDH_53_55_OGGA.pdf" target="_blank" rel="noopener">ouvrir dans un nouvel onglet</a></p>
+<ol class="steps">
+<li><b>Partie A · Participant.</b> Indiquez nom, prénom, adresse, code postal et commune (champs obligatoires *), ainsi que date et lieu de naissance, téléphone et e-mail.</li>
+<li><b>Partie B · Bailleur (Grand Dijon Habitat).</b> Elle renseigne le bailleur, l’opération et l’interlocuteur chargé du suivi.</li>
+<li><b>Partie C · Accord du participant.</b> En signant, vous autorisez expressément OGGA à transmettre à Wittym vos données personnelles d’électricité et de chauffage (listées au paragraphe 2 de la notice). Usage : gestion de l’énergie dans le logement. Datez, indiquez le lieu et signez.</li>
+<li><b>Remise.</b> Transmettez le formulaire signé à votre bailleur.</li>
+</ol>
+</div>
+<p class="mu">Ce formulaire vise les immeubles GDH 53 et 55. La notice citée au paragraphe 2 n’est pas jointe au formulaire : demandez-la à votre bailleur. Pour un autre immeuble ou pour Orvitis, renseignez-vous auprès de votre bailleur.</p>
+</div>
+</main>
+<script>
+const D={"gdh":{"N":400,"P":100,"common":{"fc":[13.14,8.5,5.61,7.02,9.73,14.77,18.41,20.21,18.55,17.21,15.08,10.1],"be":[1.57,0.6,0.22,0.17,0.76,2.09,3.15,3.02,3.58,3.97,3.34,3.43],"co":[3.55,1.48,0.51,0.42,1.7,4.87,7.68,7.05,8.02,8.02,5.76,6.66],"ga":[3.45,1.37,0.48,0.41,1.63,4.62,6.62,6.71,6.04,6.78,5.44,6.17]},"commonEur":{"fc":[0.36,0.372,0.263,0.364,0.47,0.722,0.545,0.609,0.598,0.549,0.476,0.373],"be":[0.081,0.044,0.016,0.013,0.061,0.165,0.181,0.173,0.206,0.228,0.192,0.197],"co":[0.084,0.05,0.017,0.015,0.062,0.177,0.202,0.185,0.211,0.211,0.151,0.175],"ga":[0.084,0.047,0.017,0.015,0.061,0.172,0.179,0.181,0.163,0.183,0.147,0.167]},"ten":[2.63,0.01,0.0,0.0,0.09,13.85,17.87,18.69,33.19,40.36,26.95,24.35],"tenEur":[0.329,0.001,0.0,0.0,0.008,1.327,1.762,1.801,3.249,3.923,2.641,2.411],"mix":{"aci":41603.0,"acc":74255.0,"ten":17799.0,"rev":1556.0},"pergola":{"m":[10.84,8.96,4.79,2.73,3.22,5.64,12.16,16.44,16.89,18.5,19.51,15.31],"e":[9.87,7.84,4.01,2.73,3.13,5.01,10.3,15.65,16.13,19.0,20.0,15.2]},"pr":{"ck":{"fc":1.63,"be":1.769,"co":1.769,"ga":1.769},"ce":1,"tk":3.632,"te":3.879}},"orv":{"N":220,"P":112,"common":{"o":[19.38,13.73,12.66,11.57,15.21,24.21,19.14,24.38,20.14,26.66,23.83,20.42]},"commonEur":{"o":[0.517,0.618,0.57,0.54,0.712,1.134,0.5,0.638,0.527,0.696,0.622,0.533]},"ten":[36.88,17.8,10.19,9.81,0.0,0.0,0.22,0.0,0.0,0.0,0.0,54.08],"tenEur":[4.192,2.023,1.153,1.106,0.0,0.0,0.026,0.0,0.0,0.0,0.0,6.365],"mix":{"aci":50895.0,"acc":0,"ten":14447.0,"rev":97246.0},"pergola":{"m":[12.79,11.0,5.69,3.31,3.81,7.09,14.93,16.66,19.35,17.4,25.71,20.37],"e":[11.48,9.12,4.67,3.17,3.64,5.83,11.98,18.22,18.77,22.11,24.27,17.69]},"pr":{"ck":{"o":1.036},"ce":1.036,"tk":1.446,"te":1.446}}};
+const MO=["oct.","nov.","déc.","janv.","févr.","mars","avr.","mai","juin","juil.","août","sept."],MP=["sept.",...MO.slice(0,11)];
+const PROF=[1,1.08,1.15,1.15,1.08,1.02,.95,.92,.88,.87,.85,.92];
+const BL={"gdh-fc":{n:"GDH · bloc Franche-Comté",s:"gdh",k:"fc",j:1},"gdh-be":{n:"GDH · bloc Berry",s:"gdh",k:"be",j:0},"gdh-co":{n:"GDH · bloc Corse",s:"gdh",k:"co",j:0},"gdh-ga":{n:"GDH · bloc Gascogne",s:"gdh",k:"ga",j:0},"orv":{n:"Orvitis · bloc Île-de-France",s:"orv",k:"o",j:1}};
+const detect=n=>[53,54,55].includes(n)?"gdh-fc":[4,6,8,10,12,14,16].includes(n)?"orv":null;
+const $=i=>document.getElementById(i),f=(x,d=0)=>x.toLocaleString("fr-FR",{maximumFractionDigits:d,minimumFractionDigits:d}),eur=x=>f(x,x<10?1:0)+" €";
+const sum=a=>a.reduce((p,c)=>p+c,0);
+let ov=null,sc="now",edit=false;
+function bars(v,lb,ex,d){const W=640,H=180,p=8,m=Math.max(...v,...(ex||[0]),1e-9)*1.2,bw=(W-2*p)/v.length;let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Graphique mensuel">`;
+ v.forEach((y,i)=>{const h=(H-44)*y/m,x=p+i*bw;s+=`<rect x="${x+5}" y="${H-24-h}" width="${bw-10}" height="${h}" rx="3" fill="var(--c1)"><title>${lb[i]} : ${f(y,d)}</title></rect>`;
+ if(y>0)s+=`<text x="${x+bw/2}" y="${H-28-h}" text-anchor="middle" font-size="11" fill="var(--tx)">${f(y,d)}</text>`;
+ if(ex)s+=`<line x1="${x+2}" x2="${x+bw-2}" y1="${H-24-(H-44)*ex[i]/m}" y2="${H-24-(H-44)*ex[i]/m}" stroke="var(--tx)" stroke-width="2"/>`;
+ s+=`<text x="${x+bw/2}" y="${H-7}" text-anchor="middle" font-size="11" fill="var(--mu)">${lb[i]}</text>`});return s+"</svg>"}
+function mixbar(m){const it=[["aci","Parties communes de l’immeuble (autoconsommation directe)","var(--c1)"],["acc","Parties communes des autres immeubles (partage ACC)","var(--c3)"],["ten","Locataires adhérents (ACC)","var(--c2)"],["rev","Revente au réseau","var(--c4)"]].filter(x=>m[x[0]]>0),T=sum(it.map(x=>m[x[0]]));
+ return `<div class="mix">${it.map(x=>`<div style="width:${100*m[x[0]]/T}%;background:${x[2]}"></div>`).join("")}</div><ul class="lg">${it.map(x=>`<li><i style="background:${x[2]}"></i>${x[1]} : ${f(m[x[0]]/1000,1)} MWh (${f(100*m[x[0]]/T)} %)</li>`).join("")}</ul>`}
+function tab(k){["sim","dem"].forEach(x=>{$("v-"+x).hidden=x!==k;document.querySelector("[data-t="+x+"]").classList.toggle("on",x===k)})}
+async function dl(){const u=$("pdf").getAttribute("href");try{const dn=typeof claude!=="undefined"?await claude.use("downloads"):null;if(dn){const b=await(await fetch(u)).blob();await dn.save({filename:"Formulaire_GDH_53_55_OGGA.pdf",data:b});return}}catch(e){if(e&&e.code==="declined")return}window.open(u,"_blank")}
+function run(){
+ const n=parseInt(($("num").value.match(/\d+/)||[])[0]),S=parseFloat($("surf").value),out=$("out"),ch=$("chips");
+ try{localStorage.setItem("sol",JSON.stringify([$("num").value,$("surf").value]))}catch(e){}
+ const det=isNaN(n)?null:detect(n),b=ov||det;
+ ch.hidden=!(edit||(!isNaN(n)&&!b));
+ ch.innerHTML=ch.hidden?"":`<p class="mu">${b?"Choisissez votre bloc :":"Ce numéro n’est pas reconnu : choisissez votre bloc."}</p><div class="chips">${Object.keys(BL).map(k=>`<button class="chip" data-b="${k}">${BL[k].n}</button>`).join("")}</div>`;
+ if(!b||!(S>=10&&S<=250)){out.innerHTML=`<p class="mu">Renseignez le numéro de votre logement et sa surface (10 à 250 m²) pour lancer la simulation.</p>`;return}
+ const B=BL[b],d=D[B.s],P=sc==="proj",A={I:+$("aI").value||40,R:+$("aR").value||65,C:(+$("aC").value||75)/100},s=S/A.R,cons=+$("aE").value||S*A.I,ps=sum(PROF),Cm=PROF.map(p=>cons*p/ps);
+ const ck=P?d.pr.ck[B.k]:1,ce=P?d.pr.ce:1,ckm=d.common[B.k].map(x=>x*s*ck),cem=d.commonEur[B.k].map(x=>x*s*ce),kC=sum(ckm),eC=sum(cem);
+ let us=[],eA=0,kA=0,al=0;
+ if(B.j){const tk=P?d.pr.tk:1,te=P?d.pr.te:1,a=d.ten.map(x=>x*tk);us=a.map((x,i)=>Math.min(x,A.C*Cm[i]));al=sum(a);kA=sum(us);eA=sum(d.tenEur.map((e,i)=>a[i]>0?e*te*us[i]/a[i]:0))}
+ const lbl=B.s==="gdh"?"Projection 2027 (2 pergolas)":"Objectif long terme",pg=d.pergola,pm=sum(pg.m),pe=sum(pg.e),cap=B.j&&al>0&&kA<al*.95;
+ out.innerHTML=`<p>Immeuble n° ${n} · <b>${B.n}</b> · <a href="#" id="chg">modifier</a></p>
+ <div class="seg"><button data-sc="now" class="${P?"":"on"}">Situation actuelle</button><button data-sc="proj" class="${P?"on":""}">${lbl}</button></div><p class="def"><span class="mod">Module 2</span>Choix du scénario : « actuel » = relevés des 12 derniers mois ; ${B.s==="gdh"?"« projection » = simulation 2027 avec les deux pergolas GDH en service.":"« objectif » = cible long terme d’Orvitis (≈ 240 kWh par logement en parties communes, ≈ 186 kWh par adhérent en ACC)."}</p>
+ <div class="cards">
+  <div class="card"><h3><span class="mod">Module 3</span>Votre consommation estimée</h3><p class="def">Électricité privative de votre logement, estimée d’après la surface (kWh/m²/an) et répartie sur l’année. Elle mesure la part couverte par le solaire et plafonne ce que votre compteur peut absorber.</p><div class="big">${f(cons)} kWh/an</div><p>≈ ${f(cons/12)} kWh par mois pour ${f(S)} m²</p></div>
+  <div class="card"><h3><span class="mod">Module 4</span>Parties communes (tous les locataires)</h3><p class="def">Solaire qui alimente ascenseurs, éclairage, ventilation et pompes (dans votre immeuble, puis dans ceux du périmètre). Il baisse les charges de tous, adhérents ou non ; votre quote-part suit la surface.</p><div class="big">${eur(eC)}/an</div><p>≈ ${f(kC)} kWh solaires attribués à votre quote-part des services communs.</p></div>
+  ${B.j?`<div class="card hl"><h3><span class="mod">Module 5</span>Si vous adhérez à l’ACC</h3><p class="def">Total = parties communes + solaire envoyé directement sur votre compteur (clé de répartition égale entre adhérents), dans la limite de ce que votre consommation absorbe. Économies nettes de la contribution aux charges.</p><div class="big">${eur(eC+eA)}/an</div><p>dont ${eur(eA)} pour ${f(kA)} kWh reçus sur votre compteur, soit ${f(100*kA/cons,1)} % de votre consommation.${cap?` Votre logement absorbe ${f(100*kA/al)} % de l’énergie allouée (${f(al)} kWh).`:""}</p></div>`:`<div class="card"><h3><span class="mod">Module 5</span>ACC locataires</h3><p class="def">L’ACC locataires envoie du solaire sur les compteurs individuels ; elle n’existe que pour GDH Franche-Comté et Orvitis.</p><p>Pas d’adhésion individuelle dans ce bloc : le solaire profite aux parties communes.</p></div>`}
+ </div>
+ <p class="mu">Économies TTC nettes de la contribution aux charges, ${P?"projection issue des calculettes statiques":"12 derniers mois (oct. 2025 → sept. 2026)"}.</p>
+ <h2><span class="mod">Module 6</span>${B.j?"Solaire reçu sur votre compteur":"Solaire attribué aux parties communes"}, par mois (kWh)</h2><p class="def">${B.j?"Énergie solaire affectée chaque mois à votre compteur : elle suit la production de la pergola et les règles d’allocation (Orvitis limite volontairement l’ACC à ≈ 20 % de la production après autoconsommation directe).":"Énergie solaire qui alimente chaque mois votre quote-part des services communs : elle suit la production de la pergola."}</p>
+ <div class="box sc">${bars(B.j?us:ckm,MO,null,B.j?0:1)}</div>
+ <h2><span class="mod">Module 7</span>Où va l’électricité produite ?</h2><p class="def">Le parcours des kWh produits, par ordre de priorité : parties communes de l’immeuble, parties communes des autres immeubles, locataires adhérents, puis revente au réseau.</p><p class="mu">Répartition sur 12 mois (oct. 2025 → sept. 2026).</p>${mixbar(d.mix)}
+ <h2><span class="mod">Module 8</span>${B.s==="gdh"?"Pergola GDH 55":"Pergola Orvitis (barre, Allée de la Beauce)"}</h2><p class="def">La centrale qui alimente tous les modules ci-dessus : production mesurée comparée à l’objectif recalculé selon l’ensoleillement réel.${B.s==="gdh"?" La pergola GDH 53, en attente de raccordement, n’apparaît que dans la projection.":""}</p>
+ <p class="mu">${f(pm,1)} MWh produits de sept. 2025 à août 2026, soit ${f(100*pm/pe)} % de l’objectif corrigé de l’ensoleillement (trait noir = attendu, en MWh).</p>
+ <div class="box sc">${bars(pg.m,MP,pg.e,1)}</div>`};
+document.addEventListener("click",e=>{const t=e.target;
+ if(t.dataset.t)tab(t.dataset.t);else if(t.id==="dl")dl();else if(t.dataset.sc){sc=t.dataset.sc;run()}
+ else if(t.dataset.b){ov=t.dataset.b;edit=false;run()}
+ else if(t.id==="chg"){e.preventDefault();edit=!edit;run()}});
+["num","surf","aI","aR","aC","aE"].forEach(i=>$(i).addEventListener("input",()=>{if(i==="num"){ov=null;edit=false}run()}));
+try{const v=JSON.parse(localStorage.getItem("sol")||"null");if(v){$("num").value=v[0];$("surf").value=v[1]}}catch(e){}
+run();
+</script>
+</body>
+</html>
