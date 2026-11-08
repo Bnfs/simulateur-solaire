@@ -24,6 +24,8 @@ h1[tabindex="-1"]:focus{outline:0}
 .form-check-input.big{width:1.5em;height:1.5em;margin-top:.05em}
 .form-check:has(.big){padding-inline-start:2.1em;min-height:44px}.form-check:has(.big) .form-check-input{margin-inline-start:-2.1em}
 [dir=rtl] .bi-arrow-left,[dir=rtl] .bi-arrow-right,[dir=rtl] .bi-chevron-right{display:inline-block;transform:scaleX(-1)}
+@media(max-width:575.98px){.outils{gap:.25rem!important}.outils .btn{padding-inline:.5rem;white-space:nowrap}}
+@media(max-width:359.98px){#ecouter span{display:none}#ecouter i{margin:0!important}}
 </style>
 </head>
 <body class="bg-body-tertiary">
@@ -40,7 +42,7 @@ h1[tabindex="-1"]:focus{outline:0}
 </nav>
 
 <main class="container py-3 d-print-none" style="max-width:720px">
-<div class="d-flex flex-wrap justify-content-end align-items-center gap-2 mb-2">
+<div class="d-flex flex-wrap justify-content-end align-items-center gap-2 mb-2 outils">
  <div class="btn-group tap me-auto" role="group" aria-label="Langue / Language">
   <button type="button" class="btn btn-outline-secondary active" data-lang="fr" aria-pressed="true" lang="fr">FR</button>
   <button type="button" class="btn btn-outline-secondary" data-lang="en" aria-pressed="false" lang="en">EN</button>
