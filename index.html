@@ -24,8 +24,6 @@ h1[tabindex="-1"]:focus{outline:0}
 .form-check-input.big{width:1.5em;height:1.5em;margin-top:.05em}
 .form-check:has(.big){padding-inline-start:2.1em;min-height:44px}.form-check:has(.big) .form-check-input{margin-inline-start:-2.1em}
 [dir=rtl] .bi-arrow-left,[dir=rtl] .bi-arrow-right,[dir=rtl] .bi-chevron-right{display:inline-block;transform:scaleX(-1)}
-@media(max-width:575.98px){.outils{gap:.25rem!important}.outils .btn{padding-inline:.5rem;white-space:nowrap}}
-@media(max-width:359.98px){#ecouter span{display:none}#ecouter i{margin:0!important}}
 </style>
 </head>
 <body class="bg-body-tertiary">
@@ -42,17 +40,13 @@ h1[tabindex="-1"]:focus{outline:0}
 </nav>
 
 <main class="container py-3 d-print-none" style="max-width:720px">
-<div class="d-flex flex-wrap justify-content-end align-items-center gap-2 mb-2 outils">
+<div class="d-flex flex-wrap justify-content-end align-items-center gap-2 mb-2">
  <div class="btn-group tap me-auto" role="group" aria-label="Langue / Language">
   <button type="button" class="btn btn-outline-secondary active" data-lang="fr" aria-pressed="true" lang="fr">FR</button>
   <button type="button" class="btn btn-outline-secondary" data-lang="en" aria-pressed="false" lang="en">EN</button>
   <button type="button" class="btn btn-outline-secondary" data-lang="ar" aria-pressed="false" lang="ar">العربية</button>
  </div>
  <button type="button" class="btn btn-outline-secondary tap" id="ecouter" aria-pressed="false"><i class="bi bi-volume-up me-1"></i><span>Écouter</span></button>
- <div class="btn-group tap" role="group" aria-label="Taille du texte">
-  <button type="button" class="btn btn-outline-secondary" dir="ltr" id="aMoins" aria-label="Réduire la taille du texte">A−</button>
-  <button type="button" class="btn btn-outline-secondary fw-bold" dir="ltr" id="aPlus" aria-label="Agrandir la taille du texte">A+</button>
- </div>
 </div>
 
 <div id="v-sim" class="fade show">
@@ -267,7 +261,6 @@ function startSpeak(){if(!canSpeak)return;const vis=!$("v-dem").hidden?$("v-dem"
  const re=lang==="en"?/^en/i:/^fr/i,vo=speechSynthesis.getVoices().find(v=>re.test(v.lang));speechSynthesis.cancel();speaking=true;
  const b=$("ecouter");b.setAttribute("aria-pressed","true");b.querySelector("i").className="bi bi-stop-fill me-1";b.querySelector("span").textContent=T("Arrêter","Stop","إيقاف");
  parts.forEach((x,i)=>{const u=new SpeechSynthesisUtterance(x);u.lang=lang==="en"?"en-GB":"fr-FR";u.rate=.95;if(vo)u.voice=vo;if(i===parts.length-1)u.onend=()=>{if(speaking)stopSpeak()};speechSynthesis.speak(u)})}
-let fz=0;function setFz(d){fz=Math.max(-1,Math.min(3,fz+d));document.documentElement.style.fontSize=(100+fz*12.5)+"%";$("aMoins").disabled=fz<=-1;$("aPlus").disabled=fz>=3}
 function applyEq(){const on=$("eq").checked;document.querySelectorAll(".def").forEach(el=>el.classList.toggle("d-none",!on))}
 function show(el,on){if(on){el.hidden=false;void el.offsetWidth;el.classList.add("show")}else{el.classList.remove("show");el.hidden=true}}
 function stepLbl(){$("plbl").textContent=T(`Étape ${step} sur 3`,`Step ${step} of 3`,`الخطوة ${step} من 3`)}
@@ -287,7 +280,7 @@ function demFill(){const v=(i,x)=>{if(!$(i).value)$(i).value=x};
  if(A0&&typeof A0.t==="string"&&!$("fAdr").value){const one=/^\d+\s(?!à)/.test(A0.t);$("fAdr").value=one?A0.t:A0.t.replace(/^[\d\sà]+/,"");help=!one}
  $("fAdrHelp").hidden=!help}
 function tab(k){if(k==="dem"){demElig();demFill();setTimeout(sigSize,50)}stopSpeak();show($("v-sim"),k==="sim");show($("v-dem"),k==="dem");window.scrollTo(0,0);const h=$("v-"+k).querySelector("h1");if(h)h.focus({preventScroll:true})}
-const ATTR=[["aMoins","aria-label","Réduire la taille du texte","Decrease text size","تصغير حجم النص"],["aPlus","aria-label","Agrandir la taille du texte","Increase text size","تكبير حجم النص"],["surf","placeholder","ex. 62","e.g. 62","مثال: 62"],["surf","aria-label","Surface en m²","Floor area in m²","المساحة بالمتر المربع"],["aE","placeholder","facultatif","optional","اختياري"],["fAdr","placeholder","ex. 3 rue de la Loire, appartement 12","e.g. 3 rue de la Loire, flat 12"],["fCp","placeholder","ex. 21000","e.g. 21000"],["fVille","placeholder","ex. Dijon","e.g. Dijon"],["fFait","placeholder","ex. Dijon","e.g. Dijon"]];
+const ATTR=[["surf","placeholder","ex. 62","e.g. 62","مثال: 62"],["surf","aria-label","Surface en m²","Floor area in m²","المساحة بالمتر المربع"],["aE","placeholder","facultatif","optional","اختياري"],["fAdr","placeholder","ex. 3 rue de la Loire, appartement 12","e.g. 3 rue de la Loire, flat 12"],["fCp","placeholder","ex. 21000","e.g. 21000"],["fVille","placeholder","ex. Dijon","e.g. Dijon"],["fFait","placeholder","ex. Dijon","e.g. Dijon"]];
 function setLang(l){lang=l;document.documentElement.lang=l;document.documentElement.dir=l==="ar"?"rtl":"ltr";$("bsCss").setAttribute("href",l==="ar"?"vendor/bootstrap.rtl.min.css":"vendor/bootstrap.min.css");$("arNote").hidden=l!=="ar";document.title=T("Simulateur solaire – Fontaine d’Ouche","Solar simulator – Fontaine d’Ouche","محاكي الطاقة الشمسية – Fontaine d’Ouche");
  document.querySelectorAll("[data-i18n]").forEach(el=>{if(el.dataset.fr===undefined)el.dataset.fr=el.innerHTML;el.innerHTML=l==="ar"?(I18N_AR[el.dataset.i18n]??I18N[el.dataset.i18n]):l==="en"?I18N[el.dataset.i18n]:el.dataset.fr});
  ATTR.forEach(([id,a,fr,en,ar])=>$(id).setAttribute(a,T(fr,en,ar)));
@@ -494,8 +487,6 @@ document.addEventListener("click",e=>{const t=e.target.closest("button");if(!t)r
  if(t.dataset.scroll){const g=$(t.dataset.scroll);g.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});g.focus({preventScroll:true});return}
  if(t.dataset.lang){setLang(t.dataset.lang);return}
  if(t.id==="ecouter"){speaking?stopSpeak():startSpeak();return}
- if(t.id==="aPlus"){setFz(1);return}
- if(t.id==="aMoins"){setFz(-1);return}
  if(t.dataset.a){adr=t.dataset.a;$("surf").value="";run();go(2)}
  else if(t.dataset.s){$("surf").value=t.dataset.s;run();go(3);animateCounts()}
  else if(t.dataset.go){go(+t.dataset.go)}
@@ -511,7 +502,7 @@ try{localStorage.removeItem("sol")}catch(e){}
 try{if(localStorage.getItem("solEq"))$("eq").checked=true}catch(e){}
 if($("eq").checked||new URLSearchParams(location.search).has("equipe"))$("eqWrap").hidden=false;
 if(!canSpeak)$("ecouter").hidden=true;
-setFz(0);drawAddrs();run();applyEq();
+drawAddrs();run();applyEq();
 try{const q=new URLSearchParams(location.search);const L=q.get("lang");if(L==="ar"||L==="en")setLang(L);else if(location.hash==="#en")setLang("en")}catch(e){}
 </script>
 </body>
